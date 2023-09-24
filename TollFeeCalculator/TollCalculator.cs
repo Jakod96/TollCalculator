@@ -101,26 +101,25 @@ public static class TollCalculator
     #endregion
 
 
-    private const decimal MaxFee = 60;
-    private const decimal TollFreePassageInterval = 60;
+    private const decimal MaxFee = 60; //Money should be decimal
+    private const int TollFreePassageInterval = 60;
 
     /**
      * Calculate the total toll fee for one day
-     *
      * @param vehicle - the vehicle
      * @param dates   - date and time of all passes on one day
      * @return - the total toll fee for that day
      */
 
-    public static decimal GetTotalTollFee(Vehicle vehicle, IEnumerable<DateTime> dates)
+    public static decimal GetTotalTollFee(Vehicle vehicle, List<DateTime> dates)
     {
         decimal totalFee = 0;
         
-        foreach (var date in dates)
+        foreach (var date in dates.OrderBy(x => x))
         {
-            var timeSinceLastPayment = vehicle.LastPayment - date;
+            var timeSinceLastPayment = date - dates.First();
             
-            if (timeSinceLastPayment?.Minutes <= TollFreePassageInterval || !vehicle.LastPayment.HasValue)
+            if (timeSinceLastPayment.TotalMinutes > TollFreePassageInterval || date.Equals(dates.First())) 
             {
                 totalFee += GetTollFee(date, vehicle);
             }

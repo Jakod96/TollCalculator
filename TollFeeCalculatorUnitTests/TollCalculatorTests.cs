@@ -13,7 +13,7 @@ public class TollCalculatorTests
     public void GetTotalTollFee_MultipleVariousRates_ReturnsCorrectFee()
     {
         // Arrange
-        var vehicle = new Vehicle { VehicleType = VehicleType.Car, LastPayment = DateTime.UtcNow.AddDays(-1) };
+        var vehicle = new Vehicle { VehicleType = VehicleType.Car};
         var dates = new List<DateTime>
         {
             new (2023, 9, 25, 6, 45, 0), // 13
@@ -27,12 +27,30 @@ public class TollCalculatorTests
         // Assert
         Assert.Equal(21, totalFee); //13 + 8 + 0
     }
+    
+    [Fact]
+    public void GetTotalTollFee_LastPaymentWasWithinFreeTollTime_ReturnsCorrectFee()
+    {
+        // Arrange
+        var vehicle = new Vehicle { VehicleType = VehicleType.Car };
+        var dates = new List<DateTime>
+        {
+            new (2023, 9, 25, 6, 45, 0), // 13
+            new (2023, 9, 25, 6, 46, 0), // 13
+        };
+
+        // Act
+        var totalFee = TollCalculator.GetTotalTollFee(vehicle, dates);
+
+        // Assert
+        Assert.Equal(13, totalFee);
+    }
 
     [Fact]
     public void GetTotalTollFee_OnlyWeekendDays_ReturnsNoFee()
     {
         // Arrange
-        var vehicle = new Vehicle { VehicleType = VehicleType.Car, LastPayment = DateTime.UtcNow.AddDays(-1) };
+        var vehicle = new Vehicle { VehicleType = VehicleType.Car };
         var dates = new List<DateTime>
         {
             new (2023, 9, 23, 6, 15, 0), // Saturday
@@ -50,7 +68,7 @@ public class TollCalculatorTests
     public void GetTotalTollFee_JulyDate_ReturnsNoFee()
     {
         // Arrange
-        var vehicle = new Vehicle { VehicleType = VehicleType.Car, LastPayment = DateTime.UtcNow.AddDays(-1) };
+        var vehicle = new Vehicle { VehicleType = VehicleType.Car };
         var dates = new List<DateTime>
         {
             new (2023, 7, 3, 6, 15, 0), // Monday
@@ -73,7 +91,7 @@ public class TollCalculatorTests
     public void GetTollFee_TollFreeVehicleType_ReturnsZero(VehicleType type)
     {
         // Arrange
-        var vehicle = new Vehicle { VehicleType = type, LastPayment = DateTime.UtcNow.AddDays(-1)};
+        var vehicle = new Vehicle { VehicleType = type };
         var date = new DateTime(2023, 9, 25, 6, 15, 0);
 
         // Act
